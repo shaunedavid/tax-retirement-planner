@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax & Retirement Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 25%;
+            background: #f4f4f4;
+            padding: 20px;
+            border-right: 2px solid #ccc;
+        }
+        .content {
+            width: 75%;
+            padding: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+        }
+        .hidden {
+            display: none;
+        }
+        .print-options {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Input Details</h2>
+        <label>Filing Status:</label>
+        <select id="filingStatus">
+            <option value="single">Single</option>
+            <option value="married_joint">Married Filing Jointly</option>
+        </select>
+        <label>Age:</label>
+        <input type="number" id="age" min="18" max="100">
+        <label>Income:</label>
+        <input type="number" id="income">
+        <label>Retirement Balance:</label>
+        <input type="number" id="retirementBalance">
+        <button onclick="calculateResults()">Calculate</button>
+    </div>
+    <div class="content">
+        <h1>Results</h1>
+        <div class="section" id="results">
+            <h2>Calculation Results</h2>
+            <pre id="output">Enter details and click Calculate.</pre>
+        </div>
+        <div class="print-options">
+            <h3>Select Sections to Print:</h3>
+            <input type="checkbox" checked onclick="toggleSection('results')"> Results
+            <button onclick="printPage()">Print</button>
+        </div>
+    </div>
+    <script>
+        function calculateResults() {
+            const data = {
+                filing_status: document.getElementById("filingStatus").value,
+                age: parseInt(document.getElementById("age").value, 10),
+                income: parseInt(document.getElementById("income").value, 10),
+                retirement_balance: parseInt(document.getElementById("retirementBalance").value, 10)
+            };
+
+            fetch('https://tax-planner.replit.app/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById("output").textContent = JSON.stringify(result, null, 2);
+            });
+        }
+
+        function toggleSection(id) {
+            let section = document.getElementById(id);
+            section.classList.toggle('hidden');
+        }
+        function printPage() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
